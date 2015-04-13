@@ -416,6 +416,7 @@ class Asterisk(object):
         def __send_stop_gracefully():
             """Send a core stop gracefully CLI command"""
             LOGGER.debug('sending stop gracefully')
+            self.cli_exec("core show channels").addCallbacks(__list_channels)
             if self.ast_version < AsteriskVersion("1.6.0"):
                 cli_deferred = self.cli_exec("stop gracefully")
             else:
@@ -431,6 +432,10 @@ class Asterisk(object):
         def __stop_gracefully_error(cli_command):
             """Errback for the core stop gracefully CLI command"""
             LOGGER.warning("Asterisk graceful stop for %s failed" % self.host)
+            return cli_command
+
+        def __list_channels(cli_command):
+            print cli_command.output
             return cli_command
 
         def __send_kill():
